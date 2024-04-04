@@ -80,8 +80,8 @@ function BillingTable({ data, handleOptions }: Props) {
                             .map((row, index) => {
                                 return (
                                     <TableRow hover role="checkbox" tabIndex={-1} key={index}>
-                                        <TableCell key={index + row.clientId} component="th" scope="row" align='center'>
-                                            {index + 1}
+                                        <TableCell key={index + row.clientId + rowsPerPage} component="th" scope="row" align='center'>
+                                            {page * rowsPerPage + index + 1}
                                         </TableCell>
                                         {columns.map((column) => {
                                             const value = row[column.id];
@@ -105,7 +105,7 @@ function BillingTable({ data, handleOptions }: Props) {
                 </Table>
             </TableContainer>
             <TablePagination
-                rowsPerPageOptions={[10, 25, 50]}
+                rowsPerPageOptions={[5, 10, 25, 50]}
                 component="div"
                 count={data.length}
                 rowsPerPage={rowsPerPage}

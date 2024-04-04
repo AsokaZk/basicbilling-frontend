@@ -38,6 +38,7 @@ type Props = {
 };
 export default function BasicModal({ handleSubmit }: Props) {
     const [open, setOpen] = React.useState(false);
+    const [valid, setValid] = React.useState(false);
     const [period, setPeriod] = React.useState('');
     const [category, setCategory] = React.useState('');
 
@@ -54,6 +55,7 @@ export default function BasicModal({ handleSubmit }: Props) {
         setCategory('');
         handleClose();
     }
+    const reg: RegExp = /^\d{4}(0[0-9]|1[0-2])$/;
 
     return (
         <div>
@@ -81,16 +83,24 @@ export default function BasicModal({ handleSubmit }: Props) {
                         <TextField
                             id="outlined-controlled"
                             sx={{ mr: 2 }}
+                            type='number'
                             label="Period"
+                            inputProps={{
+                                pattern: "^(19|20)\d{2}(0[1-9]|1[0-2])$"
+                            }}
                             value={period}
                             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                setPeriod(event.target.value);
+                                const input = event.target.value;
+                                if (period.length < 6 || input.length < 6) {
+                                    setValid(reg.test(input));
+                                    setPeriod(input);
+                                }
                             }}
                         />
                         <SelectCategory handleChangeSelect={handleChangeSelect} data={categories} />
                     </Box>
                     <Box justifyContent={'end'} sx={{ display: 'flex', mt: 2 }}>
-                        <Button variant="contained" size='large' onClick={handleCreate}>Create</Button>
+                        <Button variant="contained" size='large' disabled={!(valid && category != '')} onClick={handleCreate}>Create</Button>
                     </Box>
                 </Box>
             </Modal>

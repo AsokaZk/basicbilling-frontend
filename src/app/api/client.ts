@@ -8,10 +8,10 @@ export const onGetClients = createAsyncThunk(
         `${import.meta.env.VITE_APP_API_URL}/client`
       );
       if (response.status != 200) console.log("error");
-      const result = await response.json();
-      return result;
+      const data = await response.json();
+      return { data, error: "" };
     } catch (error) {
-      console.log(error);
+      return { error: "Error to get clients", data: null };
     }
   }
 );

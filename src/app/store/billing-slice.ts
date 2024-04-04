@@ -23,6 +23,7 @@ export interface BillingsState {
   billingsPending: Billing[];
   billingsHistory: Billing[];
   payBilling: Billing | null;
+  errorBilling: string;
 }
 
 const initialState: BillingsState = {
@@ -30,6 +31,7 @@ const initialState: BillingsState = {
   billingsPending: [],
   billingsHistory: [],
   payBilling: null,
+  errorBilling: "",
 };
 
 export const billingSlice = createSlice({
@@ -39,27 +41,66 @@ export const billingSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(onGetBillings.fulfilled, (state, actions) => {
-        state.billings = actions.payload;
+        if (actions.payload.data == null) {
+          state.errorBilling = actions.payload.error;
+        } else {
+          state.errorBilling = "";
+          state.billings = actions.payload.data;
+        }
         return state;
       })
       .addCase(onGetBillingsPending.fulfilled, (state, actions) => {
-        state.billingsPending = actions.payload;
+        if (actions.payload.data == null) {
+          state.errorBilling = actions.payload.error;
+        } else {
+          state.errorBilling = "";
+          state.billingsPending = actions.payload.data;
+        }
         return state;
       })
       .addCase(onGetBillingsSearch.fulfilled, (state, actions) => {
-        state.billings = actions.payload;
+        if (actions.payload.data == null) {
+          state.errorBilling = actions.payload.error;
+        } else {
+          state.errorBilling = "";
+          state.billings = actions.payload.data;
+        }
         return state;
       })
       .addCase(onGetBillingsHistory.fulfilled, (state, actions) => {
-        state.billingsHistory = actions.payload;
+        if (actions.payload.data == null) {
+          state.errorBilling = actions.payload.error;
+        } else {
+          state.errorBilling = "";
+          state.billingsHistory = actions.payload.data;
+        }
         return state;
       })
       .addCase(onCreateBilling.fulfilled, (state, actions) => {
-        state.billings.push(actions.payload);
+        if (actions.payload.data == null) {
+          state.errorBilling = actions.payload.error;
+        } else {
+          state.errorBilling = "";
+          state.billings.push(actions.payload.data);
+        }
         return state;
       })
       .addCase(onPayBilling.fulfilled, (state, actions) => {
-        state.payBilling = actions.payload;
+        if (actions.payload.data == null) {
+          state.errorBilling = actions.payload.error;
+        } else {
+          state.errorBilling = "";
+          const billingPaidId = actions.payload.data.id;
+          const billingsPending = state.billingsPending.filter(
+            (billing) => billing.id != billingPaidId
+          );
+          const billings = state.billings.filter(
+            (billing) => billing.id != billingPaidId
+          );
+          state.billingsPending = billingsPending;
+          state.billings = billings;
+          state.payBilling = actions.payload.data;
+        }
         return state;
       });
   },

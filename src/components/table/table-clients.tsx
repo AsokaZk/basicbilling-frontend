@@ -8,15 +8,6 @@ import Paper from '@mui/material/Paper';
 import { Client } from '../../app/store/client-slice';
 import { Button, Stack } from '@mui/material';
 
-function createData(
-    name: string,
-    calories: number,
-    fat: number,
-    carbs: number,
-    protein: number,
-) {
-    return { name, calories, fat, carbs, protein };
-}
 
 type Props = {
     data: Client[];
@@ -33,15 +24,15 @@ export default function ClientTable({ data, handleOptions }: Props) {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {data.map((row) => (
+                    {data.map((row, index) => (
                         <TableRow
-                            key={row.name}
+                            key={row.id + index}
                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                         >
-                            <TableCell component="th" scope="row">
+                            <TableCell component="th" scope="row" key={row.id + 'name'}>
                                 {row.name}
                             </TableCell>
-                            <TableCell component="th" scope="row" align='center'>
+                            <TableCell component="th" scope="row" align='center' key={row.id + 'option'}>
                                 <Stack spacing={2} direction="row" sx={{ justifyContent: 'center' }}>
                                     <Button variant="contained" size="medium" onClick={(_) => handleOptions(row.id.toString())} >View Pending Bills</Button>
                                 </Stack>

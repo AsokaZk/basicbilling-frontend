@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useAppDispatch, useAppSelector } from "../../app/store"
 import { onCreateBilling, onGetBillings, onGetBillingsSearch, onPayBilling } from "../../app/api";
 import { Container, Grid, Typography } from "@mui/material";
@@ -6,6 +6,8 @@ import SelectCategory from "../../components/Select";
 import BillingTable from "../../components/table/table-billins";
 import { Billing } from "../../app/store/billing-slice";
 import BasicModal from "../../components/Modal";
+import SnackbarAlert from "../../components/SnackBar";
+import TitleComponent from "../../components/Title";
 
 const categories = [
     {
@@ -27,6 +29,7 @@ const categories = [
 ];
 
 function HomeView() {
+    const [alert, setAlert] = useState(false);
     const dispatch = useAppDispatch();
     const billings = useAppSelector((state) => state.billing);
 
@@ -37,7 +40,7 @@ function HomeView() {
     const handleOptions = (data: Billing) => {
         const { period, category, clientId } = data
         dispatch(onPayBilling({ period, category, clientId }));
-        dispatch(onGetBillings());
+        setAlert(true);
     }
 
     const handleChangeSelect = (category: string) => {
@@ -50,32 +53,18 @@ function HomeView() {
 
     const handleSubmit = (data: {}) => {
         dispatch(onCreateBilling(data));
-        console.log(data);
     }
 
     return (
         <Container sx={{ mt: 4 }}>
-            <Typography
-                variant="h3"
-                noWrap
-                component="h3"
-                sx={{
-                    mr: 2,
-                    mb: 2,
-                    display: { xs: 'none', md: 'flex' },
-                    fontWeight: 700,
-                    letterSpacing: '.3rem',
-                    color: 'inherit',
-                    textDecoration: 'none',
-                }}
-            >
-                Billings
-            </Typography>
+            <TitleComponent title="Billings" />
             <Grid container justifyContent={'space-between'} sx={{ my: 4 }}>
                 <SelectCategory handleChangeSelect={handleChangeSelect} data={categories} />
                 <BasicModal handleSubmit={handleSubmit} />
             </Grid>
             <BillingTable data={billings.billings} handleOptions={handleOptions} />
+            {billings.errorBilling && <SnackbarAlert data={{ message: billings.errorBilling }} />}
+            {alert && billings.payBilling && <SnackbarAlert data={{ message: "Paid correctly", billing: billings.payBilling }} />}
         </Container >
     )
 }

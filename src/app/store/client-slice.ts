@@ -8,10 +8,12 @@ export type Client = {
 
 export interface ClientsState {
   clients: Client[];
+  errorClients: string;
 }
 
 const initialState: ClientsState = {
   clients: [],
+  errorClients: "",
 };
 
 export const clientSlice = createSlice({
@@ -20,7 +22,12 @@ export const clientSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(onGetClients.fulfilled, (state, actions) => {
-      state.clients = actions.payload;
+      if (actions.payload.data == null) {
+        state.errorClients = actions.payload.error;
+      } else {
+        state.errorClients = "";
+        state.clients = actions.payload.data;
+      }
       return state;
     });
   },
